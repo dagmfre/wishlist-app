@@ -14,9 +14,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export const createClientSupabase = () => createClientComponentClient();
 
 // Server component helper (only call this in server components)
-export const createServerSupabase = () => {
-  // This will only work in server components where cookies() is available
-  const { cookies } = require("next/headers");
+export const createServerSupabase = async () => {
+  const { cookies } = await import("next/headers");
   return createServerComponentClient({ cookies });
 };
 

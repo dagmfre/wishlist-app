@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/layout/Header";
 import AddItemForm from "./AddItemForm";
@@ -22,12 +22,12 @@ export default function WishlistPageClient({ initialUser }: Props) {
   // Use the current user from auth hook, fallback to initial user
   const currentUser = user || initialUser;
 
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
     if (!currentUser?.id) return;
 
     setLoading(true);
     try {
-      const wishlistService = new WishlistService(true); // Use API routes
+      const wishlistService = new WishlistService(true);
       const result = await wishlistService.getWishlistItems(currentUser.id);
 
       if (result.error) {
@@ -42,14 +42,13 @@ export default function WishlistPageClient({ initialUser }: Props) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentUser?.id]);
 
-  // Fetch items when component mounts or user changes
   useEffect(() => {
     if (!authLoading && currentUser?.id) {
       fetchItems();
     }
-  }, [currentUser?.id, authLoading]);
+  }, [authLoading, currentUser?.id, fetchItems]);
 
   const handleAddItem = async (
     itemData: Omit<WishlistItem, "id" | "user_id" | "created_at" | "updated_at">

@@ -1,7 +1,6 @@
 import { WishlistItem } from "./supabase";
 
-// API response types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -13,7 +12,6 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
     page: number;
     limit: number;
     total: number;
-    totalPages: number;
   };
 }
 
@@ -99,7 +97,7 @@ export const apiClient = new ApiClient();
 
 // Error handling utilities
 export function handleApiError(error: ApiResponse): string {
-  return error.error || "An unexpected error occurred";
+  return error.error || "An error occurred";
 }
 
 export function isApiError(
@@ -111,28 +109,19 @@ export function isApiError(
 // Request/Response transformers
 export function transformWishlistItemForApi(
   item: Omit<WishlistItem, "id" | "user_id" | "created_at" | "updated_at">
-): Record<string, any> {
+): Record<string, unknown> {
   return {
-    title: item.title.trim(),
-    link: item.link?.trim() || null,
-    description: item.description?.trim() || null,
+    title: item.title,
+    link: item.link,
+    description: item.description,
   };
 }
 
 export function transformApiResponseToWishlistItem(
-  apiResponse: any
+  apiResponse: Record<string, unknown>
 ): WishlistItem | null {
-  if (!apiResponse || typeof apiResponse !== "object") {
-    return null;
-  }
+  if (!apiResponse || typeof apiResponse !== "object") return null;
 
-  return {
-    id: apiResponse.id,
-    user_id: apiResponse.user_id,
-    title: apiResponse.title,
-    link: apiResponse.link,
-    description: apiResponse.description,
-    created_at: apiResponse.created_at,
-    updated_at: apiResponse.updated_at,
-  };
+  // Add proper validation here
+  return apiResponse as WishlistItem;
 }

@@ -60,17 +60,16 @@ export function truncateText(text: string, maxLength: number) {
 }
 
 export function generateId() {
-  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+  return Math.random().toString(36).substr(2, 9);
 }
 
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null;
-
+  let timeout: NodeJS.Timeout;
   return (...args: Parameters<T>) => {
-    if (timeout) clearTimeout(timeout);
+    clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   };
 }

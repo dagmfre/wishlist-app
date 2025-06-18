@@ -22,12 +22,15 @@ interface UseWishlistReturn {
   refreshItems: () => Promise<void>;
 }
 
+import { useMemo } from "react";
+
 export function useWishlist(): UseWishlistReturn {
   const { user } = useAuth();
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const wishlistService = new WishlistService();
+
+  const wishlistService = useMemo(() => new WishlistService(), []);
 
   const fetchItems = useCallback(async () => {
     if (!user) {

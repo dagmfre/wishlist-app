@@ -177,15 +177,16 @@ export default function WishlistGrid({
                 </div>
               </div>
 
-              {/* Confirmation Message */}
               <p className="text-gray-300 mb-6">
                 Are you sure you want to delete{" "}
                 <span className="font-medium text-white">
-                  "{items.find((item) => item.id === showDeleteConfirm)?.title}"
+                  &quot;
+                  {items.find((item) => item.id === showDeleteConfirm)?.title}
+                  &quot;
                 </span>{" "}
                 from your wishlist?
               </p>
-
+              
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
@@ -209,7 +210,6 @@ export default function WishlistGrid({
                   Cancel
                 </button>
               </div>
-
               {/* Keyboard Shortcut Hint */}
               <div className="mt-4 pt-4 border-t border-gray-700">
                 <p className="text-xs text-gray-500 text-center">

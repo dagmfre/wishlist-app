@@ -20,24 +20,16 @@ import {
 interface AuthResult {
   success: boolean;
   error?: string | null;
-  data?: any;
 }
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signIn: (
-    email: string,
-    password: string
-  ) => Promise<{ success: boolean; error?: string | null }>;
-  signUp: (
-    email: string,
-    password: string
-  ) => Promise<{ success: boolean; error?: string | null }>;
+  error: string | null;
+  signIn: (email: string, password: string) => Promise<AuthResult>;
+  signUp: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
-  resetPassword: (
-    email: string
-  ) => Promise<{ success: boolean; error?: string | null }>;
+  resetPassword: (email: string) => Promise<AuthResult>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -142,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return { success: false, error: error };
         }
 
-        return { success: true, data };
+        return { success: true };
       } catch (error: unknown) {
         const errorMessage =
           error instanceof Error ? error.message : "An error occurred";
@@ -203,6 +195,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = {
     user,
     loading,
+    error,
     signIn,
     signUp,
     signOut,
