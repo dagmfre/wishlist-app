@@ -6,14 +6,7 @@ import WishlistItemCard from "./WishlistItemCard";
 import EditItemModal from "./EditItemModal";
 
 interface WishlistGridProps {
-  items: Array<{
-    id: string;
-    title: string;
-    link?: string | null;
-    description?: string | null;
-    created_at: string;
-    updated_at: string;
-  }>;
+  items: WishlistItem[];
   onUpdate: (
     id: string,
     updates: Record<string, string | undefined>
