@@ -6,10 +6,7 @@ export default async function WishlistPage() {
 
   return (
     <WishlistPageClient
-      initialUser={{
-        ...user,
-        updated_at: user.updated_at || new Date().toISOString(),
-      }}
+      initialUser={{ ...user, updated_at: user.updated_at || "" }}
     />
   );
 }

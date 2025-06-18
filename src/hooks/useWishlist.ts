@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { WishlistItem } from "@/lib/supabase";
 import { WishlistService, validateWishlistItem } from "@/lib/wishlist";
 import { useAuth } from "./useAuth";
@@ -22,7 +22,12 @@ interface UseWishlistReturn {
   refreshItems: () => Promise<void>;
 }
 
-import { useMemo } from "react";
+// Define the payload type for real-time subscriptions
+interface RealtimePayload {
+  eventType: "INSERT" | "UPDATE" | "DELETE";
+  new?: WishlistItem;
+  old?: WishlistItem;
+}
 
 export function useWishlist(): UseWishlistReturn {
   const { user } = useAuth();
@@ -157,25 +162,42 @@ export function useWishlist(): UseWishlistReturn {
 
     const unsubscribe = wishlistService.subscribeToWishlistChanges(
       user.id,
-      (payload) => {
-        const { eventType, new: newRecord, old: oldRecord } = payload;
+      (payload: unknown) => {
+        try {
+          // Type assertion with proper error handling
+          const typedPayload = payload as RealtimePayload;
+          const { eventType, new: newRecord, old: oldRecord } = typedPayload;
 
-        switch (eventType) {
-          case "INSERT":
-            setItems((prev) => {
-              // Avoid duplicates
-              if (prev.some((item) => item.id === newRecord.id)) return prev;
-              return [newRecord, ...prev];
-            });
-            break;
-          case "UPDATE":
-            setItems((prev) =>
-              prev.map((item) => (item.id === newRecord.id ? newRecord : item))
-            );
-            break;
-          case "DELETE":
-            setItems((prev) => prev.filter((item) => item.id !== oldRecord.id));
-            break;
+          switch (eventType) {
+            case "INSERT":
+              if (newRecord) {
+                setItems((prev) => {
+                  // Avoid duplicates
+                  if (prev.some((item) => item.id === newRecord.id))
+                    return prev;
+                  return [newRecord, ...prev];
+                });
+              }
+              break;
+            case "UPDATE":
+              if (newRecord) {
+                setItems((prev) =>
+                  prev.map((item) =>
+                    item.id === newRecord.id ? newRecord : item
+                  )
+                );
+              }
+              break;
+            case "DELETE":
+              if (oldRecord) {
+                setItems((prev) =>
+                  prev.filter((item) => item.id !== oldRecord.id)
+                );
+              }
+              break;
+          }
+        } catch (error) {
+          console.error("Error processing realtime payload:", error);
         }
       }
     );
