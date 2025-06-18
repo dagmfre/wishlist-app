@@ -69,6 +69,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = params;
     const supabase = createServerComponentClient({ cookies });
+    console.log('updating');
+    
 
     // Get the authenticated user
     const {
