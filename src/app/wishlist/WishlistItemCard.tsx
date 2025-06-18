@@ -1,6 +1,7 @@
 'use client'
 
-import { WishlistItem } from '@/src/lib/wishlist'
+import { WishlistItem } from "@/lib/supabase"
+
 
 interface WishlistItemCardProps {
   item: WishlistItem
