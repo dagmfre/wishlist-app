@@ -95,8 +95,11 @@ export function useWishlist(): UseWishlistReturn {
         Omit<WishlistItem, "id" | "user_id" | "created_at" | "updated_at">
       >
     ) => {
-      // Validate updates
-      const validation = validateWishlistItem({ title: "", ...updates } as any);
+      const validation = validateWishlistItem({ title: "", ...updates } as {
+        title: string;
+        link?: string;
+        description?: string;
+      });
       if (!validation.isValid) {
         const firstError = Object.values(validation.errors)[0];
         return { success: false, error: firstError };

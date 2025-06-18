@@ -76,7 +76,9 @@ export default function WishlistForm({
       } else {
         setErrors({ general: result.error || "Failed to save item" });
       }
-    } catch (err) {
+    } catch (error: unknown) {
+      // Use proper error typing instead of unused 'err'
+      console.error("Error submitting form:", error);
       setErrors({ general: "An unexpected error occurred" });
     } finally {
       setLoading(false);

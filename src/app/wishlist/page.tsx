@@ -1,16 +1,17 @@
-import { requireAuth } from "@/lib/auth-server";
+"use client";
+
+import { AuthProvider } from "@/hooks/useAuth";
 import WishlistPageClient from "./WishlistPageClient";
+import { User } from "@/lib/supabase";
 
-export default async function WishlistPage() {
-  // Only do auth check on server side
-  const user = await requireAuth();
-  
-
-  // Pass user data to client component
-  return <WishlistPageClient initialUser={user} />;
+interface Props {
+  initialUser: User;
 }
 
-export const metadata = {
-  title: "My Wishlist - Wishlist App",
-  description: "Manage your personal wishlist items",
-};
+export default function WishlistPageWrapper({ initialUser }: Props) {
+  return (
+    <AuthProvider>
+      <WishlistPageClient initialUser={initialUser} />
+    </AuthProvider>
+  );
+}

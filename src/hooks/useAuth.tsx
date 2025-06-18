@@ -17,6 +17,12 @@ import {
   resetUserPassword,
 } from "@/lib/auth";
 
+interface AuthResult {
+  success: boolean;
+  error?: string | null;
+  data?: any;
+}
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
@@ -124,15 +130,66 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string) => {
-    setLoading(true);
-    try {
-      const result = await signUpUser(email, password);
-      return result;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const signUp = useCallback(
+    async (email: string, password: string): Promise<AuthResult> => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+
+        if (error) {
+          setError(error.message);
+          return { success: false, error: error.message };
+        }
+
+        return { success: true, data };
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : "An error occurred";
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
+      } finally {
+        setLoading(false);
+      }
+    },
+    [supabase.auth]
+  );
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const getSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (isMounted) {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    };
+
+    getSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (isMounted) {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, [supabase.auth]);
+  // ...existing code...
 
   const signOut = useCallback(async () => {
     setLoading(true);

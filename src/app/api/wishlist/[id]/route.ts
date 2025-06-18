@@ -3,12 +3,6 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { validateWishlistItem } from "@/lib/wishlist";
 
-interface RouteParams {
-  params: {
-    id: string;
-  };
-}
-
 // GET /api/wishlist/[id] - Get a specific wishlist item
 export async function GET(
   request: Request,
