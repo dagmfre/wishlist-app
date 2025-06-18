@@ -16,7 +16,7 @@ export const createClientSupabase = () => createClientComponentClient();
 // Server component helper (only call this in server components)
 export const createServerSupabase = () => {
   // This will only work in server components where cookies() is available
-  const { cookies } = require("next/headers");
+  const { cookies } = require("next/headers"); // eslint-disable-line @typescript-eslint/no-require-imports
   return createServerComponentClient({ cookies });
 };
 

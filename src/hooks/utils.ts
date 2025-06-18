@@ -15,62 +15,63 @@ export function formatDate(date: string | Date) {
   }).format(new Date(date));
 }
 
-export function formatRelativeTime(date: string | Date) {
-  const now = new Date();
-  const target = new Date(date);
-  const diff = now.getTime() - target.getTime();
+export function formatRelativeTime(dateString: string): string {
+  try {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  const seconds = Math.floor(diff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  const weeks = Math.floor(days / 7);
-  const months = Math.floor(days / 30);
-  const years = Math.floor(days / 365);
-
-  if (years > 0) {
-    return `${years} year${years > 1 ? "s" : ""} ago`;
-  } else if (months > 0) {
-    return `${months} month${months > 1 ? "s" : ""} ago`;
-  } else if (weeks > 0) {
-    return `${weeks} week${weeks > 1 ? "s" : ""} ago`;
-  } else if (days > 0) {
-    return `${days} day${days > 1 ? "s" : ""} ago`;
-  } else if (hours > 0) {
-    return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-  } else if (minutes > 0) {
-    return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-  } else {
-    return "Just now";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
+    if (diffDays < 365) return `${Math.ceil(diffDays / 30)} months ago`;
+    return `${Math.ceil(diffDays / 365)} years ago`;
+  } catch {
+    return "Recently";
   }
 }
 
-export function isValidUrl(string: string) {
+export function isValidUrl(url: string): boolean {
   try {
-    new URL(string);
+    new URL(url);
     return true;
-  } catch (_) {
+  } catch {
     return false;
   }
 }
 
-export function truncateText(text: string, maxLength: number) {
+export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength) + "...";
 }
 
-export function generateId() {
-  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+export function getDomainFromUrl(url: string): string {
+  try {
+    const domain = new URL(url).hostname;
+    return domain.replace("www.", "");
+  } catch {
+    return url;
+  }
 }
 
-export function debounce<T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null;
+export function getFaviconUrl(url: string): string | null {
+  try {
+    const domain = new URL(url).hostname;
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=16`;
+  } catch {
+    return null;
+  }
+}
 
-  return (...args: Parameters<T>) => {
-    if (timeout) clearTimeout(timeout);
+export function debounce<T extends Record<string, unknown>[]>(
+  func: (...args: T) => void,
+  wait: number
+): (...args: T) => void {
+  let timeout: NodeJS.Timeout;
+
+  return (...args: T) => {
+    clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   };
 }

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { validateWishlistItem } from "@/lib/wishlist";
@@ -111,7 +111,7 @@ export async function PUT(
     }
 
     // Prepare update data (only include provided fields)
-    const updateData: any = {};
+    const updateData: Record<string, string | null> = {};
     if (title !== undefined) updateData.title = title.trim();
     if (link !== undefined) updateData.link = link?.trim() || null;
     if (description !== undefined)

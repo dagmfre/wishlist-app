@@ -4,7 +4,7 @@ import {
   WishlistItem,
 } from "./supabase";
 import { User } from "@supabase/supabase-js";
-import { apiClient, ApiResponse } from "./api";
+import { apiClient } from "./api";
 
 // Client-side wishlist service (can use either Supabase direct or API routes)
 export class WishlistService {
@@ -148,7 +148,7 @@ export class WishlistService {
   }
 
   // Real-time subscription for wishlist changes (only works with direct Supabase)
-  subscribeToWishlistChanges(userId: string, callback: (payload: any) => void) {
+  subscribeToWishlistChanges(userId: string, callback: (payload: Record<string, unknown>) => void) {
     if (this.useApiRoutes) {
       console.warn("Real-time subscriptions not available with API routes");
       return () => {};

@@ -1,7 +1,7 @@
 import { WishlistItem } from "./supabase";
 
 // API response types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -111,7 +111,7 @@ export function isApiError(
 // Request/Response transformers
 export function transformWishlistItemForApi(
   item: Omit<WishlistItem, "id" | "user_id" | "created_at" | "updated_at">
-): Record<string, any> {
+): Record<string, string | null> {
   return {
     title: item.title.trim(),
     link: item.link?.trim() || null,
@@ -120,7 +120,7 @@ export function transformWishlistItemForApi(
 }
 
 export function transformApiResponseToWishlistItem(
-  apiResponse: any
+  apiResponse: Record<string, unknown>
 ): WishlistItem | null {
   if (!apiResponse || typeof apiResponse !== "object") {
     return null;

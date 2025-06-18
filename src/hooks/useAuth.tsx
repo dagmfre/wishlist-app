@@ -20,6 +20,7 @@ import {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  error: string | null;
   signIn: (
     email: string,
     password: string
@@ -39,7 +40,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [initialized, setInitialized] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClientComponentClient();
 
@@ -73,38 +74,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    // Get initial session
-    const getInitialSession = async () => {
+    // Get initial user
+    const getUser = async () => {
       try {
         const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession();
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
 
-        if (mounted) {
-          if (error) {
-            console.error("Error getting session:", error);
-          }
-
-          setUser(session?.user ?? null);
-          setLoading(false);
-          setInitialized(true);
+        if (userError) {
+          setError(userError.message);
+        } else {
+          setUser(user);
         }
-      } catch (error) {
-        console.error("Error in getInitialSession:", error);
-        if (mounted) {
-          setLoading(false);
-          setInitialized(true);
-        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unknown error");
+      } finally {
+        setLoading(false);
       }
     };
 
-    getInitialSession();
+    getUser();
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(handleAuthStateChange);
+    } = supabase.auth.onAuthStateChange(
+      (event: string, session: { user: User | null } | null) => {
+        setUser(session?.user ?? null);
+        setLoading(false);
+        setError(null);
+      }
+    );
 
     return () => {
       mounted = false;
@@ -148,6 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = {
     user,
     loading,
+    error,
     signIn,
     signUp,
     signOut,

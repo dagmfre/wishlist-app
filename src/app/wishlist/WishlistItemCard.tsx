@@ -1,6 +1,7 @@
 'use client'
 
 import { WishlistItem } from "@/lib/supabase"
+import Image from "next/image"
 
 
 interface WishlistItemCardProps {
@@ -118,10 +119,12 @@ export default function WishlistItemCard({
             className="inline-flex items-center text-primary-600 hover:text-primary-700 text-sm group/link bg-primary-50 hover:bg-primary-100 rounded-lg px-3 py-2 transition-all duration-200 max-w-full"
           >
             {isValidUrl(item.link) && getFaviconUrl(item.link) && (
-              <img 
+              <Image 
                 src={getFaviconUrl(item.link)!} 
                 alt="favicon" 
-                className="w-4 h-4 mr-2 flex-shrink-0"
+                width={16}
+                height={16}
+                className="mr-2 flex-shrink-0"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none'
                 }}
