@@ -94,8 +94,3 @@ export default function ConfirmPage() {
     </div>
   );
 }
-
-export const metadata = {
-  title: "Email Confirmation - Wishlist App",
-  description: "Confirm your email address",
-};

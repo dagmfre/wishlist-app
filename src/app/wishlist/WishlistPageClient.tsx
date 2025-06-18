@@ -1,16 +1,16 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useAuth } from '@/hooks/useAuth'
-import { WishlistService } from '@/lib/wishlist'
-import { User } from '@supabase/supabase-js'
-import Header from '@/components/layout/Header'
-import AddItemForm from './AddItemForm'
-import WishlistGrid from './WishlistGrid' 
-import { WishlistItem } from '@/lib/supabase'
+import { useState, useEffect } from "react";
+import { User } from "@supabase/supabase-js";
+import { useAuth } from "@/hooks/useAuth";
+import Header from "@/components/layout/Header";
+import AddItemForm from "./AddItemForm";
+import WishlistGrid from "./WishlistGrid";
+import { WishlistService } from "@/lib/wishlist";
+import { WishlistItem } from "@/lib/supabase";
 
 interface Props {
-  initialUser: User
+  initialUser: User;
 }
 
 export default function WishlistPageClient({ initialUser }: Props) {
@@ -179,13 +179,13 @@ export default function WishlistPageClient({ initialUser }: Props) {
   // Show loading state only on initial load
   if (authLoading || (loading && items.length === 0)) {
     return (
-      <div className="min-h-screen bg-secondary-50">
+      <div className="min-h-screen bg-black text-white">
         <Header />
         <div className="container-custom py-8">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
-              <div className="loading-spinner w-8 h-8 mx-auto mb-4"></div>
-              <p className="text-secondary-600">Loading your wishlist...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+              <p className="text-gray-400">Loading your wishlist...</p>
             </div>
           </div>
         </div>
@@ -196,11 +196,11 @@ export default function WishlistPageClient({ initialUser }: Props) {
   // Don't render if no user (should not happen due to server-side auth check)
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-secondary-50">
+      <div className="min-h-screen bg-black text-white">
         <Header />
         <div className="container-custom py-8">
           <div className="text-center">
-            <p className="text-secondary-600">
+            <p className="text-gray-400">
               Please sign in to view your wishlist.
             </p>
           </div>
@@ -210,7 +210,7 @@ export default function WishlistPageClient({ initialUser }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-secondary-50">
+    <div className="min-h-screen bg-black text-white">
       <Header />
 
       <main className="container-custom py-8">
@@ -218,8 +218,10 @@ export default function WishlistPageClient({ initialUser }: Props) {
           {/* Header Section */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <div>
-              <h1 className="page-header">My Wishlist</h1>
-              <p className="text-secondary-600">
+              <h1 className="text-3xl font-bold text-white mb-2">
+                My Wishlist
+              </h1>
+              <p className="text-gray-400">
                 {items.length === 0
                   ? "Start building your wishlist by adding your first item!"
                   : `You have ${items.length} item${
@@ -230,7 +232,7 @@ export default function WishlistPageClient({ initialUser }: Props) {
 
             <button
               onClick={() => setShowAddForm(true)}
-              className="btn-primary flex items-center"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium flex items-center cursor-pointer transition-colors"
             >
               <svg
                 className="w-5 h-5 mr-2"
@@ -251,10 +253,13 @@ export default function WishlistPageClient({ initialUser }: Props) {
 
           {/* Error State */}
           {error && (
-            <div className="alert alert-error mb-6">
+            <div className="bg-red-900/50 border border-red-700 rounded-lg p-4 mb-6">
               <div className="flex items-center justify-between">
-                <span>{error}</span>
-                <button onClick={fetchItems} className="btn-secondary btn-sm">
+                <span className="text-red-300">{error}</span>
+                <button
+                  onClick={fetchItems}
+                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm cursor-pointer transition-colors"
+                >
                   Retry
                 </button>
               </div>
@@ -263,16 +268,16 @@ export default function WishlistPageClient({ initialUser }: Props) {
 
           {/* Add Item Form Modal */}
           {showAddForm && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-              <div className="bg-white rounded-lg shadow-strong max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+              <div className="bg-gray-900 rounded-lg shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-gray-700">
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold text-secondary-900">
+                    <h2 className="text-xl font-semibold text-white">
                       Add New Item
                     </h2>
                     <button
                       onClick={() => setShowAddForm(false)}
-                      className="text-secondary-500 hover:text-secondary-700 p-1"
+                      className="text-gray-400 hover:text-gray-200 p-1 cursor-pointer transition-colors"
                     >
                       <svg
                         className="w-6 h-6"
@@ -302,7 +307,7 @@ export default function WishlistPageClient({ initialUser }: Props) {
           {/* Wishlist Content */}
           {loading && items.length > 0 ? (
             <div className="text-center py-4">
-              <div className="loading-spinner w-6 h-6 mx-auto"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto"></div>
             </div>
           ) : (
             <WishlistGrid
