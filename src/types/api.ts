@@ -1,4 +1,4 @@
-export interface RequestOptions extends RequestInit {
+export interface RequestOptions {
   timeout?: number;
   retries?: number;
 }
@@ -23,8 +23,6 @@ export interface ApiSuccessResponse<T> {
   message?: string;
   meta?: Record<string, any>;
 }
-
-export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
 
 // HTTP method types
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -89,7 +87,7 @@ export type ApiResponse<T = unknown> =
   | ({ success: true } & ApiSuccess<T>)
   | ({ success: false } & ApiError);
 
-export interface RequestOptions {
+export interface HttpRequestOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   headers?: Record<string, string>;
   body?: Record<string, unknown> | FormData;

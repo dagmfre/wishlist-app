@@ -24,15 +24,15 @@ interface AuthContextType {
   signIn: (
     email: string,
     password: string
-  ) => Promise<{ success: boolean; error?: string }>;
+  ) => Promise<{ success: boolean; error?: string | null }>;
   signUp: (
     email: string,
     password: string
-  ) => Promise<{ success: boolean; error?: string }>;
+  ) => Promise<{ success: boolean; error?: string | null }>;
   signOut: () => Promise<void>;
   resetPassword: (
     email: string
-  ) => Promise<{ success: boolean; error?: string }>;
+  ) => Promise<{ success: boolean; error?: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,6 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [initialized, setInitialized] = useState(false);
   const router = useRouter();
   const supabase = createClientComponentClient();
 
@@ -83,7 +84,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } = await supabase.auth.getUser();
 
         if (userError) {
-          setError(userError.message);
         } else {
           setUser(user);
         }
@@ -91,6 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
         setLoading(false);
+        setInitialized(true);
       }
     };
 

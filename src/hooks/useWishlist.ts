@@ -27,7 +27,7 @@ export function useWishlist(): UseWishlistReturn {
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const wishlistService = useMemo(() => new WishlistService(), []);
 
   const fetchItems = useCallback(async () => {
@@ -152,8 +152,16 @@ export function useWishlist(): UseWishlistReturn {
 
     const unsubscribe = wishlistService.subscribeToWishlistChanges(
       user.id,
-      (payload: { eventType: string; new: WishlistItem; old: WishlistItem }) => {
-        const { eventType, new: newRecord, old: oldRecord } = payload;
+      (payload: Record<string, unknown>) => {
+        const {
+          eventType,
+          new: newRecord,
+          old: oldRecord,
+        } = payload as {
+          eventType: string;
+          new: WishlistItem;
+          old: WishlistItem;
+        };
 
         switch (eventType) {
           case "INSERT":
