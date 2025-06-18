@@ -6,10 +6,10 @@ import Header from "@/components/layout/Header";
 import AddItemForm from "./AddItemForm";
 import WishlistGrid from "./WishlistGrid";
 import { WishlistService, validateWishlistItem } from "@/lib/wishlist";
-import { WishlistItem } from "@/lib/supabase";
+import { WishlistItem, User } from "@/lib/supabase";
 
 interface Props {
-  initialUser: any;
+  initialUser: User;
 }
 
 export default function WishlistPageClient({ initialUser }: Props) {
