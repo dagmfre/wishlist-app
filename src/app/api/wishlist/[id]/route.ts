@@ -10,9 +10,12 @@ interface RouteParams {
 }
 
 // GET /api/wishlist/[id] - Get a specific wishlist item
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const supabase = createServerComponentClient({ cookies });
 
     // Get the authenticated user
@@ -65,9 +68,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 }
 
 // PUT /api/wishlist/[id] - Update a wishlist item
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const supabase = createServerComponentClient({ cookies });
     console.log('updating');
     
@@ -145,9 +151,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE /api/wishlist/[id] - Delete a wishlist item
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const supabase = createServerComponentClient({ cookies });
 
     // Get the authenticated user

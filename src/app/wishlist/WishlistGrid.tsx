@@ -6,12 +6,19 @@ import WishlistItemCard from "./WishlistItemCard";
 import EditItemModal from "./EditItemModal";
 
 interface WishlistGridProps {
-  items: WishlistItem[];
+  items: Array<{
+    id: string;
+    title: string;
+    link?: string | null;
+    description?: string | null;
+    created_at: string;
+    updated_at: string;
+  }>;
   onUpdate: (
     id: string,
-    updates: Partial<WishlistItem>
-  ) => Promise<{ success: boolean; error?: string; data?: any }>;
-  onDelete: (id: string) => Promise<{ success: boolean; error?: string }>;
+    updates: Record<string, string | undefined>
+  ) => Promise<{ success: boolean; error?: string }>;
+  onDelete: (id: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -32,7 +39,8 @@ export default function WishlistGrid({
   };
 
   const handleSaveEdit = async (updates: Partial<WishlistItem>) => {
-    if (!editingItem) return;
+    if (!editingItem)
+      return { success: false, error: "No item selected for editing" };
 
     const result = await onUpdate(editingItem.id, updates);
 
@@ -86,8 +94,8 @@ export default function WishlistGrid({
             Your wishlist is empty
           </h3>
           <p className="text-secondary-600 mb-6">
-            Start adding items you love and want to remember. Click the "Add
-            Item" button to get started!
+            Start adding items you love and want to remember. Click the
+            &quot;Add Item&quot; button to get started!
           </p>
           <div className="flex items-center justify-center space-x-6 text-sm text-secondary-500">
             <div className="flex items-center">
@@ -223,11 +231,11 @@ export default function WishlistGrid({
               </div>
 
               <p className="text-secondary-700 mb-6">
-                Are you sure you want to delete "
+                Are you sure you want to delete &quot;
                 <span className="font-medium">
                   {items.find((item) => item.id === showDeleteConfirm)?.title}
                 </span>
-                " from your wishlist?
+                &quot; from your wishlist?
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3">

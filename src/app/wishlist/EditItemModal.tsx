@@ -5,8 +5,13 @@ import { validateWishlistItem } from '@/lib/wishlist'
 import { WishlistItem } from '@/lib/supabase'
 
 interface EditItemModalProps {
-  item: WishlistItem
-  onSave: (updates: Partial<WishlistItem>) => Promise<{ success: boolean; error?: string; data?: any }>
+  item: {
+    id: string
+    title: string
+    link?: string | null
+    description?: string | null
+  }
+  onSave: (updates: Record<string, string | undefined>) => Promise<{ success: boolean; error?: string }>
   onCancel: () => void
 }
 
@@ -33,6 +38,14 @@ export default function EditItemModal({ item, onSave, onCancel }: EditItemModalP
     return () => clearTimeout(timer)
   }, [])
 
+  const hasChanges = () => {
+    return (
+      formData.title.trim() !== item.title ||
+      (formData.link.trim() || '') !== (item.link || '') ||
+      (formData.description.trim() || '') !== (item.description || '')
+    )
+  }
+
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -43,7 +56,7 @@ export default function EditItemModal({ item, onSave, onCancel }: EditItemModalP
 
     document.addEventListener('keydown', handleEscape)
     return () => document.removeEventListener('keydown', handleEscape)
-  }, [])
+  }, [hasChanges, showUnsavedChanges]) // Add dependencies
 
   // Handle click outside modal
   useEffect(() => {
@@ -55,7 +68,7 @@ export default function EditItemModal({ item, onSave, onCancel }: EditItemModalP
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  }, [hasChanges, showUnsavedChanges]) // Add dependencies
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -70,14 +83,6 @@ export default function EditItemModal({ item, onSave, onCancel }: EditItemModalP
     if (errors.general) {
       setErrors(prev => ({ ...prev, general: '' }))
     }
-  }
-
-  const hasChanges = () => {
-    return (
-      formData.title.trim() !== item.title ||
-      (formData.link.trim() || '') !== (item.link || '') ||
-      (formData.description.trim() || '') !== (item.description || '')
-    )
   }
 
   const handleCancel = () => {
@@ -158,7 +163,7 @@ export default function EditItemModal({ item, onSave, onCancel }: EditItemModalP
     try {
       new URL(string)
       return true
-    } catch (_) {
+    } catch {
       return false
     }
   }

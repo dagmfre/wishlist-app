@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User } from "@supabase/supabase-js";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/layout/Header";
 import AddItemForm from "./AddItemForm";
@@ -10,7 +9,7 @@ import { WishlistService } from "@/lib/wishlist";
 import { WishlistItem } from "@/lib/supabase";
 
 interface Props {
-  initialUser: User;
+  initialUser: any;
 }
 
 export default function WishlistPageClient({ initialUser }: Props) {
@@ -23,38 +22,23 @@ export default function WishlistPageClient({ initialUser }: Props) {
   // Use the current user from auth hook, fallback to initial user
   const currentUser = user || initialUser;
 
-  const wishlistService = new WishlistService(true); // Use API routes to avoid server/client issues
-
   const fetchItems = async () => {
-    if (!currentUser) return;
+    if (!currentUser?.id) return;
 
     setLoading(true);
-    setError(null);
-
     try {
-      const response = await fetch("/api/wishlist", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const wishlistService = new WishlistService(true); // Use API routes
+      const result = await wishlistService.getWishlistItems(currentUser.id);
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch wishlist items");
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        setItems(data.data || []);
+      if (result.error) {
+        setError(result.error);
       } else {
-        throw new Error(data.error || "Failed to fetch items");
+        setItems(result.data || []);
+        setError(null);
       }
     } catch (err) {
-      console.error("Error fetching wishlist items:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to load wishlist items"
-      );
+      console.error("Error fetching items:", err);
+      setError("Failed to load wishlist items");
     } finally {
       setLoading(false);
     }
@@ -62,10 +46,10 @@ export default function WishlistPageClient({ initialUser }: Props) {
 
   // Fetch items when component mounts or user changes
   useEffect(() => {
-    if (currentUser && !authLoading) {
+    if (!authLoading && currentUser?.id) {
       fetchItems();
     }
-  }, [currentUser?.id, authLoading]); // Only depend on user ID to prevent infinite loops
+  }, [currentUser?.id, authLoading]);
 
   const handleAddItem = async (
     itemData: Omit<WishlistItem, "id" | "user_id" | "created_at" | "updated_at">
@@ -313,7 +297,9 @@ export default function WishlistPageClient({ initialUser }: Props) {
             <WishlistGrid
               items={items}
               onUpdate={handleUpdateItem}
-              onDelete={handleDeleteItem}
+              onDelete={async (id: string) => {
+                await handleDeleteItem(id);
+              }}
               loading={loading}
             />
           )}

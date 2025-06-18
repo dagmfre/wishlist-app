@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { validateWishlistItem } from "@/lib/wishlist";
-import { WishlistItem } from "@/lib/supabase";
 
 interface AddItemFormProps {
-  onSubmit: (
-    itemData: Omit<WishlistItem, "id" | "user_id" | "created_at" | "updated_at">
-  ) => Promise<{ success: boolean; error?: string; data?: any }>;
+  onSubmit: (item: {
+    title: string;
+    link?: string;
+    description?: string;
+  }) => Promise<{ success: boolean; error?: string }>;
   onCancel: () => void;
 }
 
@@ -20,18 +21,6 @@ export default function AddItemForm({ onSubmit, onCancel }: AddItemFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // Clear error for this field when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -40,48 +29,41 @@ export default function AddItemForm({ onSubmit, onCancel }: AddItemFormProps) {
 
     // Validate form data
     const validation = validateWishlistItem(formData);
-
     if (!validation.isValid) {
       setErrors(validation.errors);
       return;
     }
 
     setLoading(true);
-
     try {
-      // Prepare data for submission - ensure types match WishlistItem from supabase
-      const submitData: Omit<
-        WishlistItem,
-        "id" | "user_id" | "created_at" | "updated_at"
-      > = {
+      // Prepare data for submission
+      const submitData = {
         title: formData.title.trim(),
-        link: formData.link.trim() || undefined, // Use undefined instead of null
-        description: formData.description.trim() || undefined, // Use undefined instead of null
+        link: formData.link.trim() || undefined,
+        description: formData.description.trim() || undefined,
       };
 
       const result = await onSubmit(submitData);
-
       if (result.success) {
         // Reset form and close modal
-        setFormData({ title: "", link: "", description: "" });
+        setFormData({
+          title: "",
+          link: "",
+          description: "",
+        });
         onCancel();
       } else {
-        setErrors({ general: result.error || "Failed to add item" });
+        setErrors({
+          general: result.error || "Failed to add item",
+        });
       }
     } catch (error) {
       console.error("Error in AddItemForm:", error);
-      setErrors({ general: "An unexpected error occurred" });
+      setErrors({
+        general: "An unexpected error occurred",
+      });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const isValidUrl = (string: string) => {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
     }
   };
 
@@ -201,3 +183,4 @@ export default function AddItemForm({ onSubmit, onCancel }: AddItemFormProps) {
     </div>
   );
 }
+        

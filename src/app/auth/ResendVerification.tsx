@@ -30,8 +30,9 @@ export default function ResendVerification({ email }: ResendVerificationProps) {
       } else {
         setMessage("Verification email sent! Check your inbox.");
       }
-    } catch (error) {
-      setMessage("An error occurred. Please try again.");
+    } catch (err) {
+      console.error("Error resending verification:", err);
+      setMessage("Failed to resend verification email. Please try again.");
     } finally {
       setLoading(false);
     }
