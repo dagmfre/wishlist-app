@@ -4,7 +4,14 @@ import WishlistPageClient from "./WishlistPageClient";
 export default async function WishlistPage() {
   const user = await requireAuth();
 
-  return <WishlistPageClient initialUser={user} />;
+  return (
+    <WishlistPageClient
+      initialUser={{
+        ...user,
+        updated_at: user.updated_at || new Date().toISOString(),
+      }}
+    />
+  );
 }
 
 export const metadata = {
