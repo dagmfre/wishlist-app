@@ -26,7 +26,6 @@ interface AuthResult {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  error: string | null;
   signIn: (
     email: string,
     password: string
@@ -46,8 +45,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClientComponentClient();
 
@@ -81,38 +80,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    // Get initial user
-    const getUser = async () => {
+    // Get initial session
+    const getInitialSession = async () => {
       try {
         const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
 
-        if (userError) {
-        } else {
-          setUser(user);
+        if (mounted) {
+          if (error) {
+            console.error("Error getting session:", error);
+          }
+
+          setUser(session?.user ?? null);
+          setLoading(false);
+          setInitialized(true);
         }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unknown error");
-      } finally {
-        setLoading(false);
-        setInitialized(true);
+      } catch (error) {
+        console.error("Error in getInitialSession:", error);
+        if (mounted) {
+          setLoading(false);
+          setInitialized(true);
+        }
       }
     };
 
-    getUser();
+    getInitialSession();
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(
-      (event: string, session: { user: User | null } | null) => {
-        setUser(session?.user ?? null);
-        setLoading(false);
-        setError(null);
-      }
-    );
+    } = supabase.auth.onAuthStateChange(handleAuthStateChange);
 
     return () => {
       mounted = false;
@@ -136,14 +135,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(null);
 
       try {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+        const { data, error } = await signUpUser(email, password);
 
         if (error) {
-          setError(error.message);
-          return { success: false, error: error.message };
+          setError(error);
+          return { success: false, error: error };
         }
 
         return { success: true, data };
@@ -207,7 +203,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = {
     user,
     loading,
-    error,
     signIn,
     signUp,
     signOut,
@@ -223,4 +218,5 @@ export function useAuth() {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
+  // setError is now handled by useState above, so this function is not needed and can be removed.
 }

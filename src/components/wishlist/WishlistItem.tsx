@@ -167,7 +167,7 @@ export default function WishlistItem({
               Delete Wishlist Item
             </h3>
             <p className="text-secondary-600 mb-6">
-              Are you sure you want to delete &quot;{item.title}&quot;? This action cannot
+              Are you sure you want to delete "{item.title}"? This action cannot
               be undone.
             </p>
             <div className="flex gap-3">

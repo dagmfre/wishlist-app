@@ -9,12 +9,7 @@ import { WishlistService } from "@/lib/wishlist";
 import { WishlistItem } from "@/lib/supabase";
 
 interface Props {
-  initialUser: {
-    id: string;
-    email?: string;
-    created_at?: string;
-    updated_at?: string;
-  } | null;
+  initialUser: any;
 }
 
 export default function WishlistPageClient({ initialUser }: Props) {
@@ -54,7 +49,7 @@ export default function WishlistPageClient({ initialUser }: Props) {
     if (!authLoading && currentUser?.id) {
       fetchItems();
     }
-  }, [currentUser?.id, authLoading, fetchItems]);
+  }, [currentUser?.id, authLoading]);
 
   const handleAddItem = async (
     itemData: Omit<WishlistItem, "id" | "user_id" | "created_at" | "updated_at">

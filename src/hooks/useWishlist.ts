@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { WishlistItem } from "@/lib/supabase";
 import { WishlistService, validateWishlistItem } from "@/lib/wishlist";
 import { useAuth } from "./useAuth";
@@ -27,8 +27,7 @@ export function useWishlist(): UseWishlistReturn {
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const wishlistService = useMemo(() => new WishlistService(), []);
+  const wishlistService = new WishlistService();
 
   const fetchItems = useCallback(async () => {
     if (!user) {
@@ -155,16 +154,8 @@ export function useWishlist(): UseWishlistReturn {
 
     const unsubscribe = wishlistService.subscribeToWishlistChanges(
       user.id,
-      (payload: Record<string, unknown>) => {
-        const {
-          eventType,
-          new: newRecord,
-          old: oldRecord,
-        } = payload as {
-          eventType: string;
-          new: WishlistItem;
-          old: WishlistItem;
-        };
+      (payload) => {
+        const { eventType, new: newRecord, old: oldRecord } = payload;
 
         switch (eventType) {
           case "INSERT":
