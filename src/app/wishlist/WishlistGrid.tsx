@@ -68,9 +68,9 @@ export default function WishlistGrid({
     return (
       <div className="text-center py-16">
         <div className="max-w-md mx-auto">
-          <div className="w-24 h-24 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg
-              className="w-12 h-12 text-primary-600"
+              className="w-12 h-12 text-gray-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -83,83 +83,36 @@ export default function WishlistGrid({
               />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-secondary-900 mb-2">
+          <h3 className="text-xl font-semibold text-white mb-2">
             Your wishlist is empty
           </h3>
-          <p className="text-secondary-600 mb-6">
-            Start adding items you love and want to remember. Click the
-            &quot;Add Item&quot; button to get started!
+          <p className="text-gray-400 mb-6">
+            Start adding items you love to your wishlist!
           </p>
-          <div className="flex items-center justify-center space-x-6 text-sm text-secondary-500">
-            <div className="flex items-center">
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-              Add items
-            </div>
-            <div className="flex items-center">
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                />
-              </svg>
-              Save links
-            </div>
-            <div className="flex items-center">
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 10h16M4 14h16M4 18h16"
-                />
-              </svg>
-              Organize
-            </div>
-          </div>
         </div>
       </div>
     );
   }
 
-  // Loading state
+  // Loading skeleton
   if (loading && items.length === 0) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[...Array(6)].map((_, index) => (
-          <div key={index} className="card animate-pulse">
-            <div className="h-4 bg-secondary-200 rounded w-3/4 mb-3"></div>
-            <div className="h-3 bg-secondary-200 rounded w-1/2 mb-4"></div>
-            <div className="space-y-2 mb-4">
-              <div className="h-3 bg-secondary-200 rounded"></div>
-              <div className="h-3 bg-secondary-200 rounded w-5/6"></div>
-            </div>
-            <div className="flex justify-between">
-              <div className="h-8 bg-secondary-200 rounded w-16"></div>
-              <div className="h-8 bg-secondary-200 rounded w-16"></div>
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-gray-900 border border-gray-700 rounded-lg p-6 animate-pulse"
+          >
+            <div className="space-y-4">
+              <div className="h-4 bg-gray-700 rounded w-3/4"></div>
+              <div className="space-y-2">
+                <div className="h-3 bg-gray-700 rounded"></div>
+                <div className="h-3 bg-gray-700 rounded w-5/6"></div>
+              </div>
+              <div className="flex justify-between">
+                <div className="h-8 bg-gray-700 rounded w-16"></div>
+                <div className="h-8 bg-gray-700 rounded w-16"></div>
+              </div>
             </div>
           </div>
         ))}
@@ -194,13 +147,14 @@ export default function WishlistGrid({
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-strong max-w-md w-full animate-fade-in">
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-900 rounded-lg shadow-2xl max-w-md w-full border border-gray-700 animate-fade-in">
             <div className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-danger-100 rounded-full flex items-center justify-center mr-4">
+              {/* Header with Icon */}
+              <div className="flex items-center mb-6">
+                <div className="w-12 h-12 bg-red-900/50 border border-red-700 rounded-full flex items-center justify-center mr-4">
                   <svg
-                    className="w-6 h-6 text-danger-600"
+                    className="w-6 h-6 text-red-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -214,42 +168,57 @@ export default function WishlistGrid({
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-secondary-900">
+                  <h3 className="text-lg font-semibold text-white">
                     Delete Item
                   </h3>
-                  <p className="text-secondary-600 text-sm">
-                    This action cannot be undone.
+                  <p className="text-gray-400 text-sm">
+                    This action cannot be undone
                   </p>
                 </div>
               </div>
 
-              <p className="text-secondary-700 mb-6">
-                Are you sure you want to delete &quot;
-                <span className="font-medium">
-                  {items.find((item) => item.id === showDeleteConfirm)?.title}
-                </span>
-                &quot; from your wishlist?
+              {/* Confirmation Message */}
+              <p className="text-gray-300 mb-6">
+                Are you sure you want to delete{" "}
+                <span className="font-medium text-white">
+                  "{items.find((item) => item.id === showDeleteConfirm)?.title}"
+                </span>{" "}
+                from your wishlist?
               </p>
 
+              {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={() => handleDelete(showDeleteConfirm)}
                   disabled={deletingId === showDeleteConfirm}
-                  className="btn-danger flex items-center justify-center flex-1 order-2 sm:order-1"
+                  className="bg-red-600 hover:bg-red-700 disabled:bg-red-800 disabled:cursor-not-allowed text-white px-4 py-3 rounded-lg font-medium cursor-pointer transition-colors flex items-center justify-center flex-1 order-2 sm:order-1"
                 >
                   {deletingId === showDeleteConfirm && (
-                    <div className="loading-spinner mr-2"></div>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                   )}
-                  {deletingId === showDeleteConfirm ? "Deleting..." : "Delete"}
+                  {deletingId === showDeleteConfirm
+                    ? "Deleting..."
+                    : "Delete Item"}
                 </button>
 
                 <button
                   onClick={handleCancelDelete}
                   disabled={deletingId === showDeleteConfirm}
-                  className="btn-secondary flex items-center justify-center flex-1 order-1 sm:order-2"
+                  className="border border-gray-600 text-gray-300 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-3 rounded-lg font-medium cursor-pointer transition-colors flex items-center justify-center flex-1 order-1 sm:order-2"
                 >
                   Cancel
                 </button>
+              </div>
+
+              {/* Keyboard Shortcut Hint */}
+              <div className="mt-4 pt-4 border-t border-gray-700">
+                <p className="text-xs text-gray-500 text-center">
+                  Press{" "}
+                  <kbd className="bg-gray-700 px-2 py-1 rounded text-xs">
+                    Esc
+                  </kbd>{" "}
+                  to cancel
+                </p>
               </div>
             </div>
           </div>

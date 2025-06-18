@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/layout/Header";
 import AddItemForm from "./AddItemForm";
 import WishlistGrid from "./WishlistGrid";
-import { WishlistService } from "@/lib/wishlist";
+import { WishlistService, validateWishlistItem } from "@/lib/wishlist";
 import { WishlistItem } from "@/lib/supabase";
 
 interface Props {
@@ -71,7 +71,8 @@ export default function WishlistPageClient({ initialUser }: Props) {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to add item");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to add item");
       }
 
       const data = await response.json();
@@ -97,21 +98,44 @@ export default function WishlistPageClient({ initialUser }: Props) {
     updates: Partial<WishlistItem>
   ) => {
     try {
+      // Validate the updates before sending
+      const validation = validateWishlistItem({
+        title: updates.title || "",
+        link: updates.link,
+        description: updates.description,
+      });
+
+      if (!validation.isValid) {
+        const firstError = Object.values(validation.errors)[0];
+        return { success: false, error: firstError };
+      }
+
+      // Prepare the update data - only send defined fields
+      const updateData: Record<string, string | null> = {};
+      if (updates.title !== undefined) updateData.title = updates.title.trim();
+      if (updates.link !== undefined)
+        updateData.link = updates.link?.trim() || null;
+      if (updates.description !== undefined)
+        updateData.description = updates.description?.trim() || null;
+
       const response = await fetch(`/api/wishlist/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updates),
+        body: JSON.stringify(updateData),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update item");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || `HTTP error! status: ${response.status}`
+        );
       }
 
       const data = await response.json();
 
-      if (data.success) {
+      if (data.success && data.data) {
         setItems((prev) =>
           prev.map((item) =>
             item.id === id ? { ...item, ...data.data } : item
@@ -140,7 +164,8 @@ export default function WishlistPageClient({ initialUser }: Props) {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete item");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to delete item");
       }
 
       const data = await response.json();

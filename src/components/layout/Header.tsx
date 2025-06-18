@@ -14,7 +14,7 @@ export default function Header() {
   };
 
   return (
-    <nav className="bg-black shadow-lg border-b border-gray-800">
+    <nav className="bg-black shadow-lg border-b border-gray-800 px-8">
       <div className="container-custom">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
