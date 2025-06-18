@@ -10,8 +10,7 @@
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",
     "build:analyze": "ANALYZE=true next build",
-    "clean": "rm -rf .next",
-    "postbuild": "next-sitemap"
+    "clean": "rm -rf .next"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",
